@@ -43,12 +43,12 @@
 </template>
 <script lang="ts">
 import { ref, defineComponent } from "vue";
-import { UserOutlined, LockOutlined } from '@ant-design/icons-vue';
+import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
 export default defineComponent({
   name: "login",
   components: {
     UserOutlined,
-LockOutlined
+    LockOutlined,
   },
   setup() {
     // 定义form对象
