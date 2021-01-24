@@ -2,11 +2,10 @@ import { createRouter, createWebHistory } from "vue-router";
 const routerHistory = createWebHistory();
 import Layout from "../layouts/index.vue";
 
-export const constantRoutes = [
+const constantRoutes = [
   {
-    name: "login",
     path: "/login",
-    component: () => import("../pages/Login/index.vue"),
+    component: () => import("/@/pages/Login/index.vue"),
     hidden: true,
   },
   {
@@ -22,7 +21,7 @@ export const constantRoutes = [
       {
         path: "index",
         name: "Index",
-        component: () => import("../pages/Dashboard/index.vue"),
+        component: () => import("/@/pages/Dashboard/index.vue"),
         meta: {
           title: "首页",
           icon: "home-4-line",

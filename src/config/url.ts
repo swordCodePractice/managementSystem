@@ -1,0 +1,1 @@
+export const SERVERLESS_ACTION_TEST = "https://c7e81452-9d28-4486-bedc-5dbf7c8386a5.bspapp.com/http";

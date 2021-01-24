@@ -7,7 +7,7 @@
       <a-form :model="form">
         <a-form-item class="form-item">
           <a-input
-            v-model:value="form.userName"
+            v-model:value="form.username"
             size="large"
             placeholder="请输入用户名"
           >
@@ -44,6 +44,8 @@
 <script lang="ts">
 import { ref, defineComponent } from "vue";
 import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
+// login
+import { loginByPassword } from "../../api/login"
 export default defineComponent({
   name: "login",
   components: {
@@ -53,10 +55,13 @@ export default defineComponent({
   setup() {
     // 定义form对象
     const form = ref({
-      userName: "",
+      username: "",
       password: "",
     });
-    const onSubmit = () => {};
+    const onSubmit = async () => {
+      console.log(form.value)
+      await loginByPassword(form.value);
+    };
     return {
       form,
       onSubmit,
