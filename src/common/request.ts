@@ -26,16 +26,20 @@ export default function request(
       .request({
         url: SERVERLESS_ACTION_TEST + version + namespace,
         method: params.method,
-        data: {
+        [params.method === 'get' ? 'params' : 'data']: {
           service: params.service,
           action: params.action,
           params: params.data,
         },
+        headers: {
+          "http-request-serverless": true,
+          "sword-token": sessionStorage.getItem("token")
+        }
       })
       .then((res: any) => {
         // 判断code是否大于0，如果大于0就提示错误
         if (res.data.code > 0) {
-          message.error(res.data.message);
+          message.error(res.data.msg);
           resolve({
             success: false,
             data: null

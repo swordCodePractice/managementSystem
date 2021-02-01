@@ -30,14 +30,15 @@
         />
       </a-layout-header>
       <a-layout-content
+        class="content"
         :style="{
           margin: '24px 16px',
-          padding: '24px',
           background: '#fff',
-          minHeight: '280px',
         }"
       >
-        <router-view> </router-view>
+        <a-card>
+          <router-view> </router-view>
+        </a-card>
       </a-layout-content>
     </a-layout>
   </a-layout>
@@ -98,7 +99,6 @@ export default {
   cursor: pointer;
   transition: color 0.3s;
 }
-
 #components-layout-demo-custom-trigger .trigger:hover {
   color: #1890ff;
 }
