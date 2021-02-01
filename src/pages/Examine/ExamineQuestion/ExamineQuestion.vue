@@ -1,6 +1,6 @@
 <template>
   <div class="questionBox">
-      这里是哈哈
+      
   </div>
 </template>
 <script lang='ts'>

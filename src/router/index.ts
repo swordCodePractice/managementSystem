@@ -4,6 +4,7 @@ import Layout from "../layouts/index.vue";
 
 export const constantRoutes = [
   {
+    name: "Login",
     path: "/login",
     component: () => import("/@/pages/Login/index.vue"),
     hidden: true,
@@ -40,7 +41,7 @@ export const constantRoutes = [
       {
         path: "exmineQuestion",
         name: "exmineQuestion",
-        component: () => import("/@/pages/Examine/ExamineQuestion.vue"),
+        component: () => import("/@/pages/Examine/ExamineQuestion/ExamineQuestion.vue"),
         meta: {
           title: "审核题目",
           icon: "BookOutlined",

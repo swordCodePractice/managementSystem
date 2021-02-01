@@ -5,7 +5,7 @@ interface LoginData {
   password: string;
 }
 // 登录
-export function loginByPassword(data: LoginData) {
+export function loginByPassword(data: LoginData): Promise<ActionResult> {
   return new Promise((resolve) => {
     request({
       service: "user",
@@ -13,7 +13,6 @@ export function loginByPassword(data: LoginData) {
       method: "post",
       data,
     }).then((res) => {
-      console.log(res);
       resolve(res);
     });
   });

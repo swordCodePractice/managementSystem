@@ -29,6 +29,7 @@
         </a-form-item>
         <a-form-item>
           <a-button
+            :loading="form.loading"
             class="loginButton"
             type="primary"
             size="large"
@@ -45,7 +46,9 @@
 import { ref, defineComponent } from "vue";
 import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
 // login
-import { loginByPassword } from "../../api/login"
+import { loginByPassword } from "../../api/login";
+import { message } from "ant-design-vue";
+import { useRouter } from "vue-router";
 export default defineComponent({
   name: "login",
   components: {
@@ -53,14 +56,36 @@ export default defineComponent({
     LockOutlined,
   },
   setup() {
+    const router = useRouter();
     // 定义form对象
     const form = ref({
       username: "",
       password: "",
+      loading: false,
     });
     const onSubmit = async () => {
-      console.log(form.value)
-      await loginByPassword(form.value);
+      form.value.loading = true;
+      const loginResult: ActionResult = await loginByPassword({
+        username: form.value.username,
+        password: form.value.password,
+      });
+      form.value.loading = false;
+      if (loginResult.success) {
+        // 检查是否有admin权限
+        console.log(loginResult.data);
+        const userInfo = loginResult.data.userInfo;
+        if (userInfo.role.includes("admin")) {
+          message.success(`登录成功，欢迎您: ${userInfo.nickname}`);
+          // 存储相关信息以及token
+          sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
+          sessionStorage.setItem("uid", loginResult.data.uid);
+          sessionStorage.setItem("token", loginResult.data.token);
+          // 跳转到首页
+          router.replace({
+            name: "Index",
+          });
+        }
+      }
     };
     return {
       form,
