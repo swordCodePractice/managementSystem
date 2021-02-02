@@ -12,7 +12,7 @@ module.exports = {
   // 是否开启 https
   https: false,
   // 服务端渲染
-  ssr: true,
+  ssr: false,
   /**
    * 在生产中服务时的基本公共路径。
    * @default '/'

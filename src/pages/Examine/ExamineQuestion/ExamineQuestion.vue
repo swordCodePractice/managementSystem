@@ -22,7 +22,13 @@
       <a-table-column title="专区" data-index="areaID" />
       <!-- <a-table-column title="标签" data-index="tagID" /> -->
       <!-- <a-table-column title="时间" data-index="updateDate" /> -->
-      <!-- <a-table-column title="操作" /> -->
+      <a-table-column key="action" title="操作">
+        <template #default>
+          <span>
+            <a-button type="primary"> 审核 </a-button>
+          </span>
+        </template>
+      </a-table-column>
     </a-table>
   </div>
 </template>
@@ -42,7 +48,7 @@ export default defineComponent({
     });
     // 表格数据
     const dataSource = ref([]);
-  
+
     const getData = async () => {
       tableConfig.value.loading = true;
       const data = await getQuestionList({
@@ -62,8 +68,9 @@ export default defineComponent({
       tableConfig.value.page = e.current;
       getData();
     };
-      const handleTabChange = (currentState: string) => {
+    const handleTabChange = (currentState: string) => {
       state = currentState;
+      tableConfig.value.page = 1; //页数置为1
       getData();
     };
     return {
@@ -76,11 +83,4 @@ export default defineComponent({
 });
 </script>
 <style scoped>
-.questionBox {
-  background: #fff;
-}
-.pagination {
-  text-align: end;
-  margin-top: 20px;
-}
 </style>
