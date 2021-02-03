@@ -5,8 +5,15 @@
       <a-tab-pane key="reject" tab="已拒绝"></a-tab-pane>
       <a-tab-pane key="pass" tab="已审核"></a-tab-pane>
     </a-tabs>
+    <a-button type="primary" @click="handleClickExamine(null, 'multiple')"
+      >批量审核</a-button
+    >
     <!-- 表格 -->
     <a-table
+      style="margin-top: 10px"
+      :rowSelection="{
+        onChange: handleSelectionChange,
+      }"
       :row-key="(record) => record._id"
       @change="handleTableChange"
       :pagination="{
@@ -23,32 +30,73 @@
       <!-- <a-table-column title="标签" data-index="tagID" /> -->
       <!-- <a-table-column title="时间" data-index="updateDate" /> -->
       <a-table-column key="action" title="操作">
-        <template #default>
+        <template #default="{ record }">
           <span>
-            <a-button type="primary"> 审核 </a-button>
+            <a-button type="primary" @click="handleClickExamine(record)"
+              >审核</a-button
+            >
           </span>
         </template>
       </a-table-column>
     </a-table>
+    <!-- 审核 -->
+    <a-modal
+      title="审核"
+      v-model:visible="examineModal"
+      :confirm-loading="exmineForm.loading"
+      cancelText="取消"
+      okText="确定"
+      @ok="handleExamine"
+    >
+      <a-radio-group v-model:value="exmineForm.type">
+        <a-radio value="pass"> 审核成功 </a-radio>
+        <a-radio value="reject"> 审核失败 </a-radio>
+      </a-radio-group>
+      <a-input
+        v-model:value="exmineForm.reason"
+        v-if="exmineForm.type === 'reject'"
+        style="margin-top: 20px"
+        placeholder="请输入拒绝原因"
+      ></a-input>
+    </a-modal>
   </div>
 </template>
 <script lang='ts'>
 // api
-import { getQuestionList } from "../../../api/question";
+import { getQuestionList, updateQuestionState } from "../../../api/question";
 import { defineComponent, ref } from "vue";
+import { message } from "ant-design-vue";
+interface TableConfig {
+  page: number;
+  limit: number;
+  total: number;
+  loading: boolean;
+  selection: string[];
+}
 export default defineComponent({
   setup() {
     let state = "onlist"; // 默认状态 待审核
+    // 审核的Modal
+    const examineModal = ref(false);
+    // 审核的Form
+    const exmineForm = ref({
+      id: "",
+      loading: false,
+      type: "pass",
+      reason: "",
+    });
     // 表格配置
-    const tableConfig = ref({
+    const tableConfig = ref<TableConfig>({
       page: 1,
       limit: 10,
       total: 0,
       loading: false,
+      selection: [],
     });
+    // 判断当前是批量审核还是单击审核
+    const multipleExamine = ref(false);
     // 表格数据
     const dataSource = ref([]);
-
     const getData = async () => {
       tableConfig.value.loading = true;
       const data = await getQuestionList({
@@ -59,25 +107,79 @@ export default defineComponent({
       tableConfig.value.loading = false;
       if (data.success) {
         dataSource.value = data.data.list;
-        console.log(data.data.list);
         tableConfig.value.total = data.data.count;
       }
     };
     getData();
-    const handleTableChange = (e: { current: number }) => {
+    const handleTableChange = (e: { current: number }): void => {
       tableConfig.value.page = e.current;
       getData();
     };
-    const handleTabChange = (currentState: string) => {
+    // 点击审核按钮
+    const handleClickExamine = (record: { _id: string }, type: string) => {
+      // 打开Modal
+      examineModal.value = true;
+      // 如果是多选就让此变量置为true
+      multipleExamine.value = type === "multiple";
+      // 如果type是多选
+      if (type !== "multiple") {
+        // 存储审核的ID
+        exmineForm.value.id = record._id;
+      }
+    };
+    // 表格选中项变化
+    const handleSelectionChange = (selection: string[]) => {
+      tableConfig.value.selection = selection;
+    };
+    const handleTabChange = (currentState: string): void => {
       state = currentState;
       tableConfig.value.page = 1; //页数置为1
       getData();
     };
+    // 处理审核
+    const handleExamine = async () => {
+      // 判断是否是多选审核
+      if (multipleExamine.value && tableConfig.value.selection.length === 0) {
+        message.warning("请勾选对应的题目");
+      }
+      // 如果是拒绝则必须填写拒绝原因
+      if (
+        exmineForm.value.type === "reject" &&
+        exmineForm.value.reason === ""
+      ) {
+        message.warning("请填写拒绝原因");
+      } else {
+        exmineForm.value.loading = true;
+        const updateResult = await updateQuestionState({
+          _id: multipleExamine.value ? tableConfig.value.selection : [exmineForm.value.id],
+          state: exmineForm.value.type,
+          examineInfo:
+            exmineForm.value.type !== "reject"
+              ? undefined
+              : { reason: exmineForm.value.reason },
+        });
+        exmineForm.value.loading = false;
+        if (updateResult.success) {
+          // 重新请求列表
+          getData();
+          // 关闭模态框且清空相关记录
+          examineModal.value = false;
+          exmineForm.value.reason = "";
+          exmineForm.value.type = "pass";
+          message.success("操作成功");
+        }
+      }
+    };
     return {
       dataSource,
+      exmineForm,
+      examineModal,
       handleTabChange,
       handleTableChange,
+      handleExamine,
       tableConfig,
+      handleClickExamine,
+      handleSelectionChange,
     };
   },
 });

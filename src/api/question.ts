@@ -17,3 +17,21 @@ export function getQuestionList(data: {
     });
   });
 }
+
+// 审核题目根据_id
+export function updateQuestionState(data: {
+  state: string;
+  _id: string[];
+  examineInfo?: {reason: string};
+}): Promise<ActionResult> {
+  return new Promise((resolve) => {
+    request({
+      service: "question",
+      action: "examineQuestion",
+      method: "put",
+      data,
+    }).then((res) => {
+      resolve(res);
+    });
+  });
+}
