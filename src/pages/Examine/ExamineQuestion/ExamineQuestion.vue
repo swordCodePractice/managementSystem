@@ -141,6 +141,7 @@ export default defineComponent({
       // 判断是否是多选审核
       if (multipleExamine.value && tableConfig.value.selection.length === 0) {
         message.warning("请勾选对应的题目");
+        return;
       }
       // 如果是拒绝则必须填写拒绝原因
       if (
