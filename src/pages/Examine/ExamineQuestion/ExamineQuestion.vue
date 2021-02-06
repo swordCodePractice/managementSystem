@@ -24,10 +24,40 @@
       :loading="tableConfig.loading"
       :dataSource="dataSource"
     >
-      <a-table-column title="题目标题" data-index="title" />
-      <a-table-column title="内容" data-index="content" />
-      <a-table-column title="专区" data-index="areaID" />
-      <!-- <a-table-column title="标签" data-index="tagID" /> -->
+      <a-table-column :width="240" title="题目标题" data-index="title" />
+      <a-table-column title="内容" data-index="content">
+        <template #default="{ text: content }">
+          <a-popover :title="null">
+            <!-- 气泡中显示全部的内容 -->
+            <template #content>
+              <div class="questionContent">{{ content }}</div>
+            </template>
+            <!-- 气泡外展示部分内容由CSS用省略号代替 -->
+            <div class="questionContent ellipsis">{{ content }}</div>
+          </a-popover>
+        </template>
+      </a-table-column>
+      <a-table-column title="出题人" data-index="publishUser">
+        <template #default="{ text: publishUser }">
+          <a-avatar style="margin-right: 10px" :src="publishUser[0].avatar" />
+          <span>{{ publishUser[0].nickname }}</span>
+        </template>
+      </a-table-column>
+      <a-table-column title="专区" data-index="areaInfo">
+        <template #default="{ text: areaInfo }">
+          {{ areaInfo.map((a) => a.name)[0] }}
+        </template>
+      </a-table-column>
+      <a-table-column title="标签" data-index="tagInfo">
+        <template #default="{ text: tagInfo }">
+          <a-tag
+            v-for="(tag, index) in tagInfo"
+            :key="index"
+            color="processing"
+            >{{ tag.name }}</a-tag
+          >
+        </template>
+      </a-table-column>
       <!-- <a-table-column title="时间" data-index="updateDate" /> -->
       <a-table-column key="action" title="操作">
         <template #default="{ record }">
@@ -152,7 +182,9 @@ export default defineComponent({
       } else {
         exmineForm.value.loading = true;
         const updateResult = await updateQuestionState({
-          _id: multipleExamine.value ? tableConfig.value.selection : [exmineForm.value.id],
+          _id: multipleExamine.value
+            ? tableConfig.value.selection
+            : [exmineForm.value.id],
           state: exmineForm.value.type,
           examineInfo:
             exmineForm.value.type !== "reject"
@@ -186,4 +218,12 @@ export default defineComponent({
 });
 </script>
 <style scoped>
+.questionContent {
+  max-width: 300px;
+}
+.ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 </style>
