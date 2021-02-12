@@ -96,7 +96,7 @@
 import { getQuestionList, updateQuestionState } from "../../../api/question";
 import { defineComponent, ref } from "vue";
 import { message } from "ant-design-vue";
-interface TableConfig {
+interface ITableConfig {
   page: number;
   limit: number;
   total: number;
@@ -116,7 +116,7 @@ export default defineComponent({
       reason: "",
     });
     // 表格配置
-    const tableConfig = ref<TableConfig>({
+    const tableConfig = ref<ITableConfig>({
       page: 1,
       limit: 10,
       total: 0,

@@ -49,6 +49,34 @@ export const constantRoutes = [
       },
     ],
   },
+  {
+    path: "/app",
+    component: Layout,
+    meta: {
+      title: "APP",
+      icon: "RobotOutlined",
+    },
+    children: [
+      {
+        path: "/area",
+        name: "area",
+        component: () => import("/@/pages/App/Area/index.vue"),
+        meta: {
+          title: "专区管理",
+          icon: "BlockOutlined",
+        },
+      },
+      {
+        path: "/tag",
+        name: "tag",
+        component: () => import("/@/pages/App/Tag/index.vue"),
+        meta: {
+          title: "标签管理",
+          icon: "TagOutlined",
+        },
+      }
+    ],
+  },
 ];
 
 const Router = createRouter({
